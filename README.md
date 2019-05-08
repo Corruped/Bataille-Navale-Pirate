@@ -16,7 +16,9 @@ Le jeu requiert en premier une version récente de **Python 3** :
 Lancez l’installeur Téléchargé depuis  [La page Oficielle](https://www.python.org/downloads/)
 <br>
 <br>
+
 ![alt text](https://imgur.com/4Fsg1yP.png)
+
 <br>
 Cochez la case **« Add Python 3.X to PATH »** pour une installation sur Windows.
 (Nécessaire pour l’installation de Pygame)
