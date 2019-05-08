@@ -5,7 +5,7 @@
 Pour télécharger les fichiers du jeux il suffit de cliquer sur « Clone or download », puis sur « Download ZIP » .
 
 ![alt text](https://imgur.com/plFHFUO.png)
-![alt text](https://imgur.com/jDkpQC8)
+![alt text](https://imgur.com/jDkpQC8.png)
 
 
 il suffit ensuite de Décompresser l’archive Zip dans un dossier puis suivre les instructions suivantes.
@@ -18,11 +18,11 @@ Lancez l’installeur Téléchargé depuis  [La page Oficielle](https://www.pyth
 Cochez la case **« Add Python 3.X to PATH »** pour une installation sur Windows.
 (Nécessaire pour l’installation de Pygame)
 
-
+<br>
 Le jeu requiert la librairie Pygame, non incluse à python, il va falloir l’installer :
 Soit en lançant le ficher  Install.bat en tant qu’administrateur (UNIQUEMENT WINDOWS);
 soit en lançant la série de commande suivante (dans un terminal en administrateur) :
-
+<br>
 (utiliser sudo pour linux)
 ```bash
 python -m pip install --upgrade pip
