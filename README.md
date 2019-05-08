@@ -1,2 +1,2 @@
-# Bataille-Navalle-Pirate
+# Bataille-Navale-Pirate
 Projet ISN 2019

@@ -544,7 +544,7 @@ class IA:
 		self.ennemy = player
 		self.aim = (0,0)
 		self.newshot = True
-		self.directionnal = False
+		self.directional = False
 		self.checked = 0
 		self.pola = False
 		self.ori = False
