@@ -14,9 +14,8 @@ il suffit ensuite de Décompresser l’archive Zip dans un dossier puis suivre l
 ## Instalation de Python et Pygame :
 
 Le jeu requiert en premier une version récente de **Python 3** :
+Lancez l’installeur Téléchargé depuis  [La page Oficielle](https://www.python.org/downloads/)
 
-
-Lancez l’installeur Téléchargé depuis  [La page Oficielle](https://www.python.org/downloads/)\s
 
 
 ![alt text](https://imgur.com/4Fsg1yP.png)
@@ -27,12 +26,10 @@ Cochez la case **« Add Python 3.X to PATH »** pour une installation sur Window
 (Nécessaire pour l’installation de Pygame)
 
 
+
 Le jeu requiert la librairie Pygame, non incluse à python, il va falloir l’installer
-
 Soit en lançant le ficher  Install.bat en tant qu’administrateur (UNIQUEMENT WINDOWS),
-
 soit en lançant la série de commande suivante (dans un terminal en administrateur) :
-
 
 
 (utiliser sudo pour linux)
