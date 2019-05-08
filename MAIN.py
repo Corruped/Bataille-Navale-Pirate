@@ -8,20 +8,22 @@ import random
 #____________________________________________________
 
 global Edit_Mode
-Edit_Mode = False
 global PlayMode
+global Message
+Edit_Mode = False
+Message = "Placez votre Flotte !"
 PlayMode = False
 DEBUGTRAY = False
+
+mult = 1
+Lcase = 32
+
 global isSelection
 isSelection = False
 
 global TOUR
 TOUR = True
-#
-#
-# barque = 1 case
-#
-#
+
 COUNTER = 0
 def vanish():
 	pass
@@ -40,9 +42,9 @@ pygame.font.init()#initialisation de l'objet pygame.font
 pygame.init() #initialisation de l'objet pygame
 BaseFont = pygame.font.SysFont("Comic Sans MS",16) #definition d'un objet font (police d'écriture) -> BaseFont
 SmallDebugFont = pygame.font.SysFont("Arial Bold",25)
-
-
-
+STATEfont = pygame.font.Font("Assets/Pieces of Eight.ttf",55)
+STATfont = pygame.font.Font("Assets/Pieces of Eight.ttf",28)
+TITLEfont = pygame.font.Font("Assets/Pieces of Eight.ttf",40)
 
 infoObject = pygame.display.Info() # création d'un objet (pygame.display.Info)
 fit = 25 # nb de cases a rentrer dans l'espace horizontal de l'écran
@@ -113,8 +115,9 @@ def RandomOrientation(flags):
 	elif Xinc == 0 and Yinc ==0:
 		ok = False
 	if ok:
-		print ("placing a  " + str(what) + "  position : x = " + str(x) + "  ||  y = "  + str(y) )
-		print ("XP = " + str(XP) + "   XM = " + str(XM) + "   YP = " + str(YP) + "   YM = " + str(YM))
+		#print ("placing a  " + str(what) + "  position : x = " + str(x) + "  ||  y = "  + str(y) )
+		#print ("XP = " + str(XP) + "   XM = " + str(XM) + "   YP = " + str(YP) + "   YM = " + str(YM))
+		pass
 
 	return(Xinc,Yinc,ok)
 
@@ -347,7 +350,8 @@ class TrayClass:
 	#	#pygame.draw.rect(surf,[0,0,0],(self.Gposx,self.Gposy,ni,ni))
 		######################################################################################################
 		if grid:
-			self.surf.blit(pygame.transform.scale(TRAY,(644,644)),(self.Gposx-2,self.Gposy-2))
+			n = ((32 * 10) + 2 )* mult
+			self.surf.blit(pygame.transform.scale(TRAY,(n,n)),(self.Gposx-2,self.Gposy-2))
 		for y in range(0,ydim):
 			for x in range(0,xdim):
 				if not tray [x][y] == "":
@@ -362,7 +366,7 @@ class TrayClass:
 					but.imageset = "Assets/Boats/"
 					if Visible:
 						but.angle = self.angle[x][y]
-						if self.ShoTray != "":
+						if self.ShowTray != "":
 							but.imageset = "Assets/DeadBoats/"
 					but.base = tray [x][y][0] + "/" + tray [x][y][1] + ".png"
 					but.basehover = tray[x][y][0] + "/" + tray [x][y][1] + ".png"
@@ -377,24 +381,25 @@ class TrayClass:
 						gameDisplay.blit(debugplayer,(but.posX +5,but.posY +25))#
 
 	def showTray (self,surf):
-		self.surf.blit(pygame.transform.scale(TRAY,(644,644)),(self.Gposx-2,self.Gposy-2))
+		n = ((32 * 10) + 2 )* mult
+		self.surf.blit(pygame.transform.scale(TRAY,(n,n)),(self.Gposx-2,self.Gposy-2))
 		for i in self.ButTray:
 			i.show()
 
 
 	def PlaceModeDisplay (self,what,Yinc ,Xinc ):
-		print("draw")
-		print(self.editTray)
+		#print("draw")
+		#print(self.editTray)
 		if what == "C": self.length = 2
 		elif what == "F": self.length = 3
 		elif what == "V": self.length = 4
 		xdim = self.dim[0]
 		ydim = self.dim[1]
 
-		self.surf.blit(pygame.transform.scale(CROSS,(64,64)),(self.Gposx + offset*self.placeposX,self.Gposy + offset*self.placeposY))
+		self.surf.blit(pygame.transform.scale(CROSS,(Lcase,Lcase)),(self.Gposx + offset*self.placeposX,self.Gposy + offset*self.placeposY))
 		if isSelection:
 			for i in range(0,self.length):
-				self.surf.blit(pygame.transform.scale(CROSS,(64,64)),(self.Gposx + offset*self.placeposX + Xinc*i*Lcase,self.Gposy + offset*self.placeposY+Yinc*i*Lcase))
+				self.surf.blit(pygame.transform.scale(CROSS,(Lcase,Lcase)),(self.Gposx + offset*self.placeposX + Xinc*i*Lcase,self.Gposy + offset*self.placeposY+Yinc*i*Lcase))
 		self.ok = True
 	def DisEdit (self,surf):
 
@@ -425,7 +430,7 @@ class TrayClass:
 		xdim = self.dim[0]
 		ydim = self.dim[1]
 
-		self.surf.blit(pygame.transform.scale(CROSS,(64,64)),(self.Gposx + offset*self.placeposX,self.Gposy + offset*self.placeposY))
+		self.surf.blit(pygame.transform.scale(CROSS,(Lcase,Lcase)),(self.Gposx + offset*self.placeposX,self.Gposy + offset*self.placeposY))
 
 	def UpdateTray(self,move):
 		MoveX =0
@@ -501,13 +506,14 @@ class TrayClass:
 			elif self.Vplaced < self.nbVais:self.toPlace = "V"
 			else:
 				Edit_Mode = False
+				global Message
+				Message = "Que la bataille commence !"
 				PlayMode = True
 				self.HideTray()
 			#print(MoveX,MoveY )
 			self.EDplace(self.toPlace,MoveX,MoveY)
 
 
-Lcase = 64
 offset= Lcase
 
 
@@ -577,17 +583,17 @@ class IA:
 			else:x=x-1
 	def TURN(self):
 		if self.newshot:
-			print ("newshot")
+			#print ("newshot")
 			x = random.randint(0,9)
 			y = random.randint(0,9)
 
 			if self.ennemy.tray [x][y] != "":
-				print ("touché")
+			#	print ("touché")
 				self.aim = (x,y)
 				self.newshot = False
 
 		elif self.directional:
-			print ("Directional")
+		#	print ("Directional")
 			x = self.aim[0]
 			y = self.aim[1]
 			Xinc =  self.aimdir[0] - self.aim[0]
@@ -618,7 +624,7 @@ class IA:
 					self.inc = 0
 
 		else :
-			print ("cherck surroundings")
+			#print ("cherck surroundings")
 			x = self.aim[0]
 			y = self.aim[1]
 			checked = False
@@ -631,16 +637,19 @@ class IA:
 				else:
 					if Pola:x=x+1
 					else:x=x-1
+				if x> 9 or x<0 or y>9 or y<0:
+					self.checked = self.checked+1
+					self.reload()
 
 				while self.ennemy.ShowTray [x][y] != "":
-					print("already checked")
+					#print("already checked")
 					self.checked = self.checked+1
 					self.reload()
 					if self.checked >=3:
 						break
 
 				if self.ennemy.tray [x][y] != "":
-					print ("touché")
+				#	print ("touché")
 					self.ennemy.ShowTray [x][y] = "Y"
 					checked = True
 					self.newshot = False
@@ -692,27 +701,30 @@ def ArrayDisplay(Which):
 UI_SPan_h= 350
 UI_SPan_w = 200
 
-UI_TPan_h= 70
-UI_TPan_w = 350
+UI_TPan_h= 80
+UI_TPan_w = 570
+
+Message = "Placez votre Flotte !"
 #____________________________________________________
 
 def basicInterface():
 	pygame.draw.rect(gameDisplay,Placeholder,(0,(infoObject.current_h/2)-(UI_SPan_h/2),UI_SPan_w,UI_SPan_h)) #endroit, couleur, taille
-
 	pygame.draw.rect(gameDisplay,Placeholder,(infoObject.current_w-UI_SPan_w,(infoObject.current_h/2)-(UI_SPan_h/2),UI_SPan_w,UI_SPan_h))#endroit, couleur, taille
-
 	pygame.draw.rect(gameDisplay,Placeholder,(infoObject.current_w/2 - UI_TPan_w/2,0,UI_TPan_w,UI_TPan_h)) #endroit, couleur, taille
+
+
 
 def PrintScore():
+	MsgBox = STATEfont.render(Message,1,[0,0,0])
 
-	pygame.draw.rect(gameDisplay,Placeholder,(0,(infoObject.current_h/2)-(UI_SPan_h/2),UI_SPan_w,UI_SPan_h)) #endroit, couleur, taille
+	gameDisplay.blit(TITLEfont.render("Ordi",1,[0,0,0]),(infoObject.current_w-UI_SPan_w + 65,(infoObject.current_h/2)-(UI_SPan_h/2) + 5))#
+	gameDisplay.blit(TITLEfont.render("Joueur",1,[0,0,0]),(50,(infoObject.current_h/2)-(UI_SPan_h/2) + 5))
+	gameDisplay.blit(MsgBox,(infoObject.current_w/2  - MsgBox.get_rect().size[0]/2,15))
 
-	pygame.draw.rect(gameDisplay,Placeholder,(infoObject.current_w-UI_SPan_w,(infoObject.current_h/2)-(UI_SPan_h/2),UI_SPan_w,UI_SPan_h))#endroit, couleur, taille
-
-	pygame.draw.rect(gameDisplay,Placeholder,(infoObject.current_w/2 - UI_TPan_w/2,0,UI_TPan_w,UI_TPan_h)) #endroit, couleur, taille
-
+	gameDisplay.blit(STATfont.render("Caravelles :",1,[0,0,0]),(10,(infoObject.current_h/2)-(UI_SPan_h/2) + 60))
+	gameDisplay.blit(STATfont.render("Fregattes :",1,[0,0,0]),(10,(infoObject.current_h/2)-(UI_SPan_h/2) + 90))
+	gameDisplay.blit(STATfont.render("Vaisseau :",1,[0,0,0]),(10,(infoObject.current_h/2)-(UI_SPan_h/2) + 120))
 def TitleScreen():
-
 	gameDisplay.blit(pygame.transform.scale(LOGO,(485*2,176*2)),(infoObject.current_w/2 - 485,30))
 
 	Start = Bouton()
@@ -747,7 +759,7 @@ def vanish():
 def unloadts():
 	for i in range (0,len(buttons)):
 		del buttons[0]
-	print (buttons)
+	#print (buttons)
 
 def ShowBackGr():
 	nombre = infoObject.current_w // fit + 1
@@ -823,7 +835,7 @@ def Showpl():
 	computer.Gposx = infoObject.current_w - (xdim*offset) - 300
 	computer.Gposy =infoObject.current_h/2  - (ydim*offset)/2
 	computer.FillTray()
-	print (computer.tray)
+	#print (computer.tray)
 	ShowBackGr()
 	player.DisTray(gameDisplay,True)
 	player.ennemy = computer
@@ -832,7 +844,8 @@ def Showpl():
 	computer.DisTray(gameDisplay,False)
 
 	basicInterface()
-	Edit_Mode = True
+	PrintScore()
+	__Mode = True
 
 def reveal(x,y):
 	if computer.tray[x][y] != "":
@@ -850,8 +863,10 @@ def showtray():
 
 def RefreshPl():
 	#print("refresh")
+
 	ShowBackGr()
 	basicInterface()
+	PrintScore()
 	player.showTray(gameDisplay)
 	computer.showTray(gameDisplay)
 
