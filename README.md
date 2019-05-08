@@ -28,7 +28,7 @@ Le jeu requiert la librairie Pygame, non incluse à python, il va falloir l’in
 Soit en lançant le ficher  Install.bat en tant qu’administrateur (UNIQUEMENT WINDOWS),<br>
 soit en lançant la série de commande suivante (dans un terminal en administrateur) :
 <br>
-
+<br>
 (utiliser sudo pour linux)
 ```bash
 python -m pip install --upgrade pip
@@ -36,4 +36,4 @@ python -m pip install --upgrade pip
 pip install pygame
 ```
 <br>
-Normalement le jeux est prêt , il suffit d'executer le fichier _main.pyw_
+Normalement le jeux est prêt , il suffit d'executer le fichier __main.pyw__
