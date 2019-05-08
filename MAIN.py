@@ -166,6 +166,7 @@ class Bouton:
 
 	def initimages(self):
 
+
 		self.imagesrc = pygame.image.load(self.imageset + self.base)
 		self.hoverimagesrc = pygame.image.load(self.imageset + self.basehover)
 
