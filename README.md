@@ -1,5 +1,6 @@
-# Bataille-Navale-Pirate
-Projet ISN 2019
+# Bataille-Navale-Pirate : Projet ISN 2019
+
+## Intrsuctions : 
 
 Pour télécharger les fichiers du jeux il suffit de cliquer sur « Clone or download », puis sur « Download ZIP » .
 ![alt text](https://imgur.com/XsqREbm.png)
