@@ -39,7 +39,7 @@ numberBoatsOnTheTray = 0
 pygame.font.init()#initialisation de l'objet pygame.font
 pygame.init() #initialisation de l'objet pygame
 BaseFont = pygame.font.SysFont("Comic Sans MS",16) #definition d'un objet font (police d'écriture) -> BaseFont
-SmallDebugFont = pygame.font.SysFont("Arial",12)
+SmallDebugFont = pygame.font.SysFont("Arial Bold",25)
 
 
 
@@ -359,9 +359,11 @@ class TrayClass:
 					but.autoScale = True
 					but.intent = 5
 					but.arg = self.ennemy
+					but.imageset = "Assets/Boats/"
 					if Visible:
 						but.angle = self.angle[x][y]
-					but.imageset = "Assets/Boats/"
+						if self.ShoTray != "":
+							but.imageset = "Assets/DeadBoats/"
 					but.base = tray [x][y][0] + "/" + tray [x][y][1] + ".png"
 					but.basehover = tray[x][y][0] + "/" + tray [x][y][1] + ".png"
 					#buttons.append (but)
@@ -534,7 +536,7 @@ class Player:
 
 		for y in range(0,ydim):
 			for x in range(0,xdim):
-				traycontent = SmallDebugFont.render(self.tray.ShowTray [x][y], True, pygame.Color("Black"))
+				traycontent = SmallDebugFont.render(self.tray.ShowTray [x][y], True, pygame.Color("Magenta"))
 				gameDisplay.blit(traycontent,(self.tray.Gposx + offset*x +25,self.tray.Gposy + offset*y +25))#
 
 
@@ -543,31 +545,86 @@ class IA:
 		self.checked = [[False]*10 for _ in range(10)]
 		self.ennemy = player
 		self.aim = (0,0)
+		self.aimdir = (0,0)
 		self.newshot = True
 		self.directional = False
+		self.backwards = False
 		self.checked = 0
 		self.pola = False
 		self.ori = False
+		self.inc = 0
+		self.hit = 0
+	def reset(self, Reshot = False):
+		self.backwards = False
+		self.directional = False
+		self.newshot = True
+		self.inc = 0
+		self.hit = 0
+
+		if Reshot :
+			TURN()
+
+	def reload(self):
+		x = self.aim[0]
+		y = self.aim[1]
+		Ori = bool(random.getrandbits(1))
+		Pola = bool(random.getrandbits(1))
+		if Ori:
+			if Pola:y = y+1
+			else:y =y-1
+		else:
+			if Pola:x=x+1
+			else:x=x-1
 	def TURN(self):
 		if self.newshot:
+			print ("newshot")
 			x = random.randint(0,9)
 			y = random.randint(0,9)
 
 			if self.ennemy.tray [x][y] != "":
+				print ("touché")
 				self.aim = (x,y)
 				self.newshot = False
+
 		elif self.directional:
-			pass
-			self.directionnal = False
-			self.newshot = True
+			print ("Directional")
+			x = self.aim[0]
+			y = self.aim[1]
+			Xinc =  self.aimdir[0] - self.aim[0]
+			Yinc =  self.aimdir[1] - self.aim[1]
+
+#self.inc = self.inc+1
+			if  (x * Xinc+2*self.inc)> 9 or (x * Xinc+2*self.inc)<0 or (y * Yinc+2*self.inc)>9 or(y * Yinc+2*self.inc)<0:
+				self.backwards = True
+
+			if self.backwards:
+				if self.ennemy.ShowTray [x * -Xinc*self.inc][y * -Yinc*self.inc] != "":
+					self.reset(True)
+					pass
+				elif self.ennemy.tray [x * -Xinc*self.inc][y * -Yinc*self.inc] != "":
+					self.ennemy.ShowTray [x * -Xinc*self.inc][y * -Yinc*self.inc] = "Y"
+					self.hit = self.hit+1
+					self.inc = self.inc +1
+				else:
+					self.reset()
+
+			else:
+				if self.ennemy.tray [x * Xinc+2*self.inc][y * Yinc+2*self.inc] != "":
+					self.ennemy.ShowTray [x * Xinc+2*self.inc][y * Yinc+2*self.inc] = "Y"
+					self.inc = self.inc + 1
+					self.hit = self.hit + 1
+				else:
+					self.backwards = True
+					self.inc = 0
 
 		else :
+			print ("cherck surroundings")
 			x = self.aim[0]
 			y = self.aim[1]
 			checked = False
 			while not checked:
 				Ori = bool(random.getrandbits(1))
-				Pola = random.getrandbits(1)
+				Pola = bool(random.getrandbits(1))
 				if Ori:
 					if Pola:y = y+1
 					else:y =y-1
@@ -575,20 +632,30 @@ class IA:
 					if Pola:x=x+1
 					else:x=x-1
 
-				if self.ennemy.ShowTray [x][y] != "Y":
+				while self.ennemy.ShowTray [x][y] != "":
+					print("already checked")
+					self.checked = self.checked+1
+					self.reload()
+					if self.checked >=3:
+						break
+
+				if self.ennemy.tray [x][y] != "":
+					print ("touché")
 					self.ennemy.ShowTray [x][y] = "Y"
 					checked = True
 					self.newshot = False
 					self.ori = Ori
 					self.pola = Pola
-					self.directionnal = True
+					self.directional = True
+					self.aimdir = (x,y)
 					self.checked = 0
 
 				elif self.checked >=3:
 					checked = True
-					self.newshot = False
+					self.newshot = True
 					self.checked = 0
 				else : self.checked = self.checked+1
+			checked = False
 
 
 		global COUNTER
