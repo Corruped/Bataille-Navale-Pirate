@@ -36,4 +36,4 @@ python -m pip install --upgrade pip
 pip install pygame
 ```
 <br>
-Normalement le jeux est prêt , il suffit d'executer le fichier __main.pyw__
+Normalement le jeux est prêt , il suffit d'executer le fichier <i>main.pyw</i>
