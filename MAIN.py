@@ -15,8 +15,7 @@ Message = "Placez votre Flotte !"
 PlayMode = False
 DEBUGTRAY = False
 
-mult = 1
-Lcase = 32
+
 
 global isSelection
 isSelection = False
@@ -45,14 +44,29 @@ SmallDebugFont = pygame.font.SysFont("Arial Bold",25)
 STATEfont = pygame.font.Font("Assets/Pieces of Eight.ttf",55)
 STATfont = pygame.font.Font("Assets/Pieces of Eight.ttf",28)
 TITLEfont = pygame.font.Font("Assets/Pieces of Eight.ttf",40)
+SelectedFont = pygame.font.Font("Assets/Pieces of Eight.ttf",30)
+SelectedFont.set_underline(True)
 
-infoObject = pygame.display.Info() # création d'un objet (pygame.display.Info)
+ecran = pygame.display.Info() # création d'un objet (pygame.display.Info)
 fit = 25 # nb de cases a rentrer dans l'espace horizontal de l'écran
 StopGame = False # variable verifiant l'etat du programe
+
+global FONT1
+global FONT2
+global FONT3
+
+FONT1 = SelectedFont
+FONT2 =STATfont
+FONT3 =STATfont
 
 CROSS  =  pygame.image.load("Assets/cross.png")
 TRAY  =  pygame.image.load("Assets/tray.png")
 LOGO =  pygame.image.load("Assets/LOGO.png")
+
+
+if ecran.current_w < 1900: mult = 1.5
+else: mult = 2
+Lcase = int(32*mult)
 
 
 def check(array,what,radius,y,x,YM,YP,XM,XP):
@@ -121,7 +135,8 @@ def RandomOrientation(flags):
 
 	return(Xinc,Yinc,ok)
 
-def ScribeBoat(id,size,posX,posY,Xinc,Yinc,tray,postray,angletray):
+def ScribeBoat(id,size,posX,posY,Xinc,Yinc,tray,postray,angletray,TotalBoats):
+
 	angle = 0
 	if Xinc >0:
 		angle = 0
@@ -134,7 +149,8 @@ def ScribeBoat(id,size,posX,posY,Xinc,Yinc,tray,postray,angletray):
 	for i in range(0,size):
 		angletray[posY + Yinc*i][posX+ Xinc*i] = angle
 		tray[posY + Yinc*i][posX+ Xinc*i] = id+str(i)
-		postray.append(str(posX) + "," + str(posY)+',' + id +str(i))
+		postray[TotalBoats].append([str(posY + Yinc*i)][str(posX+ Xinc*i)][id])
+		TotalBoats = TotalBoats + 1
 
 def reveal(x,y):
 	pass
@@ -178,10 +194,10 @@ class Bouton:
 			self.Scale = int(self.w / self.imagesrc.get_rect().size[0])
 
 		self.image = pygame.transform.rotate(self.imagesrc,self.angle)
-		self.image = pygame.transform.scale(self.image,(self.Scale * self.imagesrc.get_rect().size[0],self.Scale * self.imagesrc.get_rect().size[1]))
+		self.image = pygame.transform.scale(self.image,(int(self.Scale * self.imagesrc.get_rect().size[0]),int(self.Scale * self.imagesrc.get_rect().size[1])))
 
 		self.hoverimage = pygame.transform.rotate(self.hoverimagesrc,self.angle)
-		self.hoverimage = pygame.transform.scale(self.hoverimage,(self.Scale * self.hoverimagesrc.get_rect().size[0],self.Scale * self.hoverimagesrc.get_rect().size[1]))
+		self.hoverimage = pygame.transform.scale(self.hoverimage,(int(self.Scale * self.hoverimagesrc.get_rect().size[0]),int(self.Scale * self.hoverimagesrc.get_rect().size[1])))
 
 		if self.istext :
 			self.textimagesrc = pygame.image.load(self.imageset + "/" + self.text + ".png")
@@ -219,9 +235,9 @@ class Bouton:
 
 	def center(self,type):
 		if type == "x":
-			self.posX =   infoObject.current_w /2 - self.image.get_rect().size[0] / 2
+			self.posX =   ecran.current_w /2 - self.image.get_rect().size[0] / 2
 		elif type == "y":
-			self.posY =  infoObject.current_h /2 -  self.image.get_rect().size[1] / 2
+			self.posY =  ecran.current_h /2 -  self.image.get_rect().size[1] / 2
 		else :
 			print ("error centering button  : unknown argument : " + type)
 
@@ -293,12 +309,12 @@ class TrayClass:
 		self.XincM = 0
 		self.YincM = 0
 		self.owner = ""
-
+		self.TotalBoats = 0
 	def CreateTray(self,x,y):
 		self.dim = (x,y)
 		#print ("Created Tray")
 
-		self.postray = []
+		self.postray = [[0]*3 for _ in range(self.nbFreg + self.nbCar + self.nbVais)]
 		self.angle = [[0]*x for _ in range(y)]
 		self.tray = [[""]*x for _ in range(y)] # parce que python c'est rigolo
 	def placeBoats(self,nbBoats,size):
@@ -319,7 +335,7 @@ class TrayClass:
 				ok = incs[2]
 
 				if ok :
-					ScribeBoat(bato[size - 2],size,posX,posY,Xinc,Yinc,self.tray,self.postray,self.angle)
+					ScribeBoat(bato[size - 2],size,posX,posY,Xinc,Yinc,self.tray,self.postray,self.angle,self.TotalBoats)
 					numberBoatsOnTheTray = numberBoatsOnTheTray +1
 
 				else :
@@ -327,7 +343,13 @@ class TrayClass:
 					pass
 
 
+	def CheckTray (self):
 
+		for Boat in postray:
+			for y in range(0,9):
+				for x in range(0,9):
+
+				pass
 	def FillTray(self):
 		self.placeBoats(self.nbFreg,2)
 		self.placeBoats(self.nbCar,3)
@@ -346,11 +368,11 @@ class TrayClass:
 
 		xdim = self.dim[0]
 		ydim = self.dim[1]
-		ni = Lcase * xdim + (offset-Lcase)  * (xdim-1)
+		ni = Lcase *mult * xdim + (offset-Lcase)  * (xdim-1)
 	#	#pygame.draw.rect(surf,[0,0,0],(self.Gposx,self.Gposy,ni,ni))
 		######################################################################################################
 		if grid:
-			n = ((32 * 10) + 2 )* mult
+			n = int(((32 * 10) + 2 )* mult)
 			self.surf.blit(pygame.transform.scale(TRAY,(n,n)),(self.Gposx-2,self.Gposy-2))
 		for y in range(0,ydim):
 			for x in range(0,xdim):
@@ -360,7 +382,8 @@ class TrayClass:
 					but.posY = self.Gposy + offset*y
 					but.h = but.w = Lcase
 					but.ID = (x,y)
-					but.autoScale = True
+					but.autoScale = False
+					but.Scale = mult
 					but.intent = 5
 					but.arg = self.ennemy
 					but.imageset = "Assets/Boats/"
@@ -381,7 +404,7 @@ class TrayClass:
 						gameDisplay.blit(debugplayer,(but.posX +5,but.posY +25))#
 
 	def showTray (self,surf):
-		n = ((32 * 10) + 2 )* mult
+		n = int(((32 * 10) + 2 )* mult)
 		self.surf.blit(pygame.transform.scale(TRAY,(n,n)),(self.Gposx-2,self.Gposy-2))
 		for i in self.ButTray:
 			i.show()
@@ -479,13 +502,13 @@ class TrayClass:
 
 				self.placeMode = False
 
-				ScribeBoat(self.toPlace ,self.length,self.placeposY,self.placeposX,Y,X,self.tray,self.postray,self.angle)
+				ScribeBoat(self.toPlace ,self.length,self.placeposY,self.placeposX,Y,X,self.tray,self.postray,self.angle,self.TotalBoats)
 				#print ("angle :" + str(self.angle))
 				if self.toPlace == "C":self.Cplaced = self.Cplaced +1
 				elif self.toPlace == "F":self.Fplaced = self.Fplaced +1
 				elif self.toPlace == "V":self.Vplaced = self.Vplaced +1
 
-				print("Bateaux : " + str(self.Cplaced)+ " / " + str(self.nbCar) +"   Fplaced : " + str(self.Fplaced)+ " / " + str(self.nbFreg) + "   Vplaced :" +  str(self.Vplaced) + " / " + str(self.nbCar)    )
+				#print("Bateaux : " + str(self.Cplaced)+ " / " + str(self.nbCar) +"   Fplaced : " + str(self.Fplaced)+ " / " + str(self.nbFreg) + "   Vplaced :" +  str(self.Vplaced) + " / " + str(self.nbCar)    )
 			else:
 				self.placeMode = True
 			isSelection = False
@@ -501,10 +524,28 @@ class TrayClass:
 		else:
 			global Edit_Mode
 			global PlayMode
-			if self.Cplaced  < self.nbCar:self.toPlace = "C"
-			elif self.Fplaced < self.nbFreg:self.toPlace = "F"
-			elif self.Vplaced < self.nbVais:self.toPlace = "V"
+			global FONT1
+			global FONT2
+			global FONT3
+			if self.Cplaced  < self.nbCar:
+				self.toPlace = "C"
+				FONT1 =SelectedFont
+				FONT2 =STATfont
+				FONT3 =STATfont
+			elif self.Fplaced < self.nbFreg:
+				self.toPlace = "F"
+				FONT1 = STATfont
+				FONT2 =SelectedFont
+				FONT3 =STATfont
+			elif self.Vplaced < self.nbVais:
+				self.toPlace = "V"
+				FONT1 = STATfont
+				FONT2 =STATfont
+				FONT3 =SelectedFont
 			else:
+				FONT1 = STATfont
+				FONT2 =STATfont
+				FONT3 =STATfont
 				Edit_Mode = False
 				global Message
 				Message = "Que la bataille commence !"
@@ -516,10 +557,16 @@ class TrayClass:
 
 offset= Lcase
 
+if ecran.current_w > 1920 :
+	gameDisplay = pygame.display.set_mode((1920,1080),FULLSCREEN)# definition de la taille de la fenetre ( -> taille de l'écran)
+else:
+	gameDisplay = pygame.display.set_mode((ecran.current_w,ecran.current_h),FULLSCREEN)
 
 
-gameDisplay = pygame.display.set_mode((infoObject.current_w,infoObject.current_h),FULLSCREEN)# definition de la taille de la fenetre ( -> taille de l'écran)
-# -> affichage en plein écran
+
+
+	# -> affichage en plein écran
+
 pygame.display.set_caption('GAME')# définition du tytre de la fenetre -> plein écran (inutile) -> preview en bare des taches (ok)
 
 gameDisplay.fill([255,0,255]) # remplissage de la couleur d'arrière-plan (magenta) pour verifier l'abscence de texture
@@ -538,7 +585,7 @@ class Player:
 	def showWhereIAaimed(self):
 		xdim = self.tray.dim[0]
 		ydim = self.tray.dim[1]
-		ni = Lcase * xdim + (offset-Lcase)  * (xdim-1)
+		ni = Lcase *mult * xdim + (offset-Lcase)  * (xdim-1)
 
 		for y in range(0,ydim):
 			for x in range(0,xdim):
@@ -699,7 +746,7 @@ def ArrayDisplay(Which):
 # enmplacements des panneaux (Side Pannel -> Span)(Top Pannel ->TNan)
 #____________________________________________________
 UI_SPan_h= 350
-UI_SPan_w = 200
+UI_SPan_w = 215
 
 UI_TPan_h= 80
 UI_TPan_w = 570
@@ -708,24 +755,32 @@ Message = "Placez votre Flotte !"
 #____________________________________________________
 
 def basicInterface():
-	pygame.draw.rect(gameDisplay,Placeholder,(0,(infoObject.current_h/2)-(UI_SPan_h/2),UI_SPan_w,UI_SPan_h)) #endroit, couleur, taille
-	pygame.draw.rect(gameDisplay,Placeholder,(infoObject.current_w-UI_SPan_w,(infoObject.current_h/2)-(UI_SPan_h/2),UI_SPan_w,UI_SPan_h))#endroit, couleur, taille
-	pygame.draw.rect(gameDisplay,Placeholder,(infoObject.current_w/2 - UI_TPan_w/2,0,UI_TPan_w,UI_TPan_h)) #endroit, couleur, taille
+	pygame.draw.rect(gameDisplay,Placeholder,(0,(ecran.current_h/2)-(UI_SPan_h/2),UI_SPan_w,UI_SPan_h)) #endroit, couleur, taille
+	pygame.draw.rect(gameDisplay,Placeholder,(ecran.current_w-UI_SPan_w,(ecran.current_h/2)-(UI_SPan_h/2),UI_SPan_w,UI_SPan_h))#endroit, couleur, taille
+	pygame.draw.rect(gameDisplay,Placeholder,(ecran.current_w/2 - UI_TPan_w/2,0,UI_TPan_w,UI_TPan_h)) #endroit, couleur, taille
 
 
 
 def PrintScore():
+
 	MsgBox = STATEfont.render(Message,1,[0,0,0])
 
-	gameDisplay.blit(TITLEfont.render("Ordi",1,[0,0,0]),(infoObject.current_w-UI_SPan_w + 65,(infoObject.current_h/2)-(UI_SPan_h/2) + 5))#
-	gameDisplay.blit(TITLEfont.render("Joueur",1,[0,0,0]),(50,(infoObject.current_h/2)-(UI_SPan_h/2) + 5))
-	gameDisplay.blit(MsgBox,(infoObject.current_w/2  - MsgBox.get_rect().size[0]/2,15))
+	gameDisplay.blit(TITLEfont.render("Ordi",1,[0,0,0]),(ecran.current_w-UI_SPan_w + 65,(ecran.current_h/2)-(UI_SPan_h/2) + 5))#
+	gameDisplay.blit(TITLEfont.render("Joueur",1,[0,0,0]),(50,(ecran.current_h/2)-(UI_SPan_h/2) + 5))
+	gameDisplay.blit(MsgBox,(ecran.current_w/2  - MsgBox.get_rect().size[0]/2,15))
 
-	gameDisplay.blit(STATfont.render("Caravelles :",1,[0,0,0]),(10,(infoObject.current_h/2)-(UI_SPan_h/2) + 60))
-	gameDisplay.blit(STATfont.render("Fregattes :",1,[0,0,0]),(10,(infoObject.current_h/2)-(UI_SPan_h/2) + 90))
-	gameDisplay.blit(STATfont.render("Vaisseau :",1,[0,0,0]),(10,(infoObject.current_h/2)-(UI_SPan_h/2) + 120))
+
+	gameDisplay.blit(FONT1.render("Caravelles : " + str(player.Cplaced ) + "/" + str( player.nbCar),1,[0,0,0]),(10,(ecran.current_h/2)-(UI_SPan_h/2) + 70))
+	gameDisplay.blit(FONT2.render("Fregates : " + str(player.Fplaced) + "/" + str( player.nbFreg),1,[0,0,0]),(10,(ecran.current_h/2)-(UI_SPan_h/2) + 120))
+	gameDisplay.blit(FONT3.render("Vaisseau : " + str(player.Vplaced) + "/" + str( player.nbVais),1,[0,0,0]),(10,(ecran.current_h/2)-(UI_SPan_h/2) + 170))
+
+	gameDisplay.blit(STATfont.render("Caravelles : " + str(computer.Cplaced ) + "/" + str( computer.nbCar),1,[0,0,0]),(ecran.current_w-UI_SPan_w + 10,(ecran.current_h/2)-(UI_SPan_h/2) + 70))
+	gameDisplay.blit(STATfont.render("Fregates : " + str(computer.Fplaced) + "/" + str( computer.nbFreg),1,[0,0,0]),(ecran.current_w-UI_SPan_w + 10,(ecran.current_h/2)-(UI_SPan_h/2) + 120))
+	gameDisplay.blit(STATfont.render("Vaisseau : " + str(computer.Vplaced) + "/" + str( computer.nbVais),1,[0,0,0]),(ecran.current_w-UI_SPan_w + 10,(ecran.current_h/2)-(UI_SPan_h/2) + 170))
+
+
 def TitleScreen():
-	gameDisplay.blit(pygame.transform.scale(LOGO,(485*2,176*2)),(infoObject.current_w/2 - 485,30))
+	gameDisplay.blit(pygame.transform.scale(LOGO,(485*2,176*2)),(ecran.current_w/2 - 485,30))
 
 	Start = Bouton()
 	Start.imageset = "Assets/UI/BigButton"
@@ -762,11 +817,11 @@ def unloadts():
 	#print (buttons)
 
 def ShowBackGr():
-	nombre = infoObject.current_w // fit + 1
+	nombre = ecran.current_w // fit + 1
 
 	img = pygame.image.load("Assets/Mer.png")
 	issou  = pygame.transform.scale(img, (nombre,nombre))
-	yrange = infoObject.current_h // nombre + 1
+	yrange = ecran.current_h // nombre + 1
 
 	for x in range(0,fit):
 		for y in range(0,yrange):
@@ -824,7 +879,7 @@ def Showpl():
 	ydim = player.dim[1]
 
 	player.Gposx = 300
-	player.Gposy =infoObject.current_h/2 - (ydim*offset)/2
+	player.Gposy =ecran.current_h/2 - (ydim*offset)/2
 	#player.FillTray() # remplissage du tableau player
 
 
@@ -832,8 +887,8 @@ def Showpl():
 	xdim = computer.dim[0]
 	ydim = computer.dim[1]
 
-	computer.Gposx = infoObject.current_w - (xdim*offset) - 300
-	computer.Gposy =infoObject.current_h/2  - (ydim*offset)/2
+	computer.Gposx = ecran.current_w - (xdim*offset) - 300
+	computer.Gposy =ecran.current_h/2  - (ydim*offset)/2
 	computer.FillTray()
 	#print (computer.tray)
 	ShowBackGr()
