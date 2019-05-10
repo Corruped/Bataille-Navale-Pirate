@@ -17,6 +17,13 @@ DEBUGTRAY = False
 
 
 
+global TOTALBOATSIA
+global TOTALBOATSPLAYER
+
+TOTALBOATSIA = 0
+TOTALBOATSPLAYER = 0
+
+
 global isSelection
 isSelection = False
 
@@ -26,7 +33,7 @@ TOUR = True
 COUNTER = 0
 def vanish():
 	pass
-def RefreshPl():
+def RefreshPl(Redraw = False):
 	pass
 placeMode = False
 traysize = 10
@@ -149,11 +156,11 @@ def ScribeBoat(id,size,posX,posY,Xinc,Yinc,tray,postray,angletray,TotalBoats):
 	for i in range(0,size):
 		angletray[posY + Yinc*i][posX+ Xinc*i] = angle
 		tray[posY + Yinc*i][posX+ Xinc*i] = id+str(i)
-		postray[TotalBoats].append([str(posY + Yinc*i)][str(posX+ Xinc*i)][id])
-		TotalBoats = TotalBoats + 1
+		postray[TotalBoats][i] = ((posY + Yinc*i),(posX+ Xinc*i))
+	print ("added  " +  str(postray[TotalBoats]))
 
-def reveal(x,y):
-	pass
+	return TotalBoats + 1
+
 
 
 
@@ -180,6 +187,7 @@ class Bouton:
 		self.image = pygame.image.load("Assets/NOTEXT.png")
 		self.imagesrc = pygame.image.load("Assets/NOTEXT.png")
 		self.arg = ""
+
 		# -> TEXT ??????????????????
 		# |>	FONT ??????????????
 
@@ -235,9 +243,9 @@ class Bouton:
 
 	def center(self,type):
 		if type == "x":
-			self.posX =   ecran.current_w /2 - self.image.get_rect().size[0] / 2
+			self.posX =   ScreenW /2 - self.image.get_rect().size[0] / 2
 		elif type == "y":
-			self.posY =  ecran.current_h /2 -  self.image.get_rect().size[1] / 2
+			self.posY =  ScreenH /2 -  self.image.get_rect().size[1] / 2
 		else :
 			print ("error centering button  : unknown argument : " + type)
 
@@ -254,9 +262,11 @@ class Bouton:
 		elif self.intent == 5:
 			global TOUR
 			TOUR = False
+			Player.ennemy.CheckTray("Ia :  ")
 			reveal(self.ID[0],self.ID[1])
-			RefreshPl()
+			RefreshPl(True)
 			IA.TURN()
+			Player.tray.CheckTray("PLayer : ")
 			if DEBUGTRAY:
 				Player.showWhereIAaimed()
 		elif self.intent == 9:
@@ -286,12 +296,13 @@ class TrayClass:
 		self.Fplaced = 0
 		self.Cplaced = 0
 		self.Vplaced = 0
-		self.dim = (1 , 1) # creation d'une variable double ->dimention du plateau
+		self.dim = (1 , 1) # creation d'une variable nb]double ->dimention du plateau
 		self.tray = [[""]] #initialisation du paramètre Plateau (tableaux de X par Y contentant les batteaux)
 		self.editTray = [[""]*10 for _ in range(10)]
 		self.angle = [[0]*10 for _ in range(10)]
 		self.ShowTray = [[""]*10 for _ in range(10)]
 		self.checked = [[False]*10 for _ in range(10)]
+		self.postray = []
 		self.Gposx = 30
 		self.Gposy = 30
 		self.Lcase = 0
@@ -310,11 +321,12 @@ class TrayClass:
 		self.YincM = 0
 		self.owner = ""
 		self.TotalBoats = 0
+		self.player = False
 	def CreateTray(self,x,y):
 		self.dim = (x,y)
 		#print ("Created Tray")
 
-		self.postray = [[0]*3 for _ in range(self.nbFreg + self.nbCar + self.nbVais)]
+		self.postray = [[(255,255)]*4 for _ in range(self.nbFreg + self.nbCar + self.nbVais)]
 		self.angle = [[0]*x for _ in range(y)]
 		self.tray = [[""]*x for _ in range(y)] # parce que python c'est rigolo
 	def placeBoats(self,nbBoats,size):
@@ -335,7 +347,8 @@ class TrayClass:
 				ok = incs[2]
 
 				if ok :
-					ScribeBoat(bato[size - 2],size,posX,posY,Xinc,Yinc,self.tray,self.postray,self.angle,self.TotalBoats)
+
+					self.TotalBoats = ScribeBoat(bato[size - 2],size,posX,posY,Xinc,Yinc,self.tray,self.postray,self.angle,self.TotalBoats)
 					numberBoatsOnTheTray = numberBoatsOnTheTray +1
 
 				else :
@@ -343,13 +356,35 @@ class TrayClass:
 					pass
 
 
-	def CheckTray (self):
+	def CheckTray (self,test = ""):
+		nb = 0
+		#print (self.postray)
+		for Boat in self.postray:
+			delboat = 0
+			act = 0
+			for i in range(0,4):
+				if Boat[i][0] > 9:
+					delboat = delboat +1
+					#print ("delboat")
 
-		for Boat in postray:
-			for y in range(0,9):
-				for x in range(0,9):
+				elif self.ShowTray[Boat[i][0]][Boat[i][1]] != "":
+					if self.ShowTray[Boat[i][0]][Boat[i][1]] != "NN" :
+						self.postray[nb][i] = (200,200)
+						act = act+1
 
-				pass
+			if delboat == 3:
+				self.postray.remove(Boat)
+
+				if act == 2: self.Cplaced = self.Cplaced -1
+				elif act == 3 : self.Fplaced = self.Fplaced -1
+				elif act == 4 :self.Vplaced = self.Vplaced -1
+			nb = nb +1
+
+
+
+
+
+			#print(Boat[1][1])
 	def FillTray(self):
 		self.placeBoats(self.nbFreg,2)
 		self.placeBoats(self.nbCar,3)
@@ -365,6 +400,7 @@ class TrayClass:
 	def DisTray(self,surf,Visible,grid = True):
 		if Visible :tray = self.tray
 		else :tray = self.ShowTray
+
 
 		xdim = self.dim[0]
 		ydim = self.dim[1]
@@ -389,8 +425,9 @@ class TrayClass:
 					but.imageset = "Assets/Boats/"
 					if Visible:
 						but.angle = self.angle[x][y]
-						if self.ShowTray != "":
+						if self.ShowTray[x][y] != "" :
 							but.imageset = "Assets/DeadBoats/"
+
 					but.base = tray [x][y][0] + "/" + tray [x][y][1] + ".png"
 					but.basehover = tray[x][y][0] + "/" + tray [x][y][1] + ".png"
 					#buttons.append (but)
@@ -502,7 +539,7 @@ class TrayClass:
 
 				self.placeMode = False
 
-				ScribeBoat(self.toPlace ,self.length,self.placeposY,self.placeposX,Y,X,self.tray,self.postray,self.angle,self.TotalBoats)
+				self.TotalBoats = ScribeBoat(self.toPlace ,self.length,self.placeposY,self.placeposX,Y,X,self.tray,self.postray,self.angle,self.TotalBoats)
 				#print ("angle :" + str(self.angle))
 				if self.toPlace == "C":self.Cplaced = self.Cplaced +1
 				elif self.toPlace == "F":self.Fplaced = self.Fplaced +1
@@ -558,10 +595,14 @@ class TrayClass:
 offset= Lcase
 
 if ecran.current_w > 1920 :
-	gameDisplay = pygame.display.set_mode((1920,1080),FULLSCREEN)# definition de la taille de la fenetre ( -> taille de l'écran)
+	gameDisplay = pygame.display.set_mode((1920,1080))# definition de la taille de la fenetre ( -> taille de l'écran)
+	ScreenW  = 1920
+	ScreenH = 1080
+
 else:
 	gameDisplay = pygame.display.set_mode((ecran.current_w,ecran.current_h),FULLSCREEN)
-
+	ScreenW  = ecran.current_W
+	ScreenH = ecran.current_h
 
 
 
@@ -576,6 +617,7 @@ gameDisplay.fill([255,0,255]) # remplissage de la couleur d'arrière-plan (magen
 
 
 player = TrayClass() # creation d'un objet Tray
+player.player = True
 computer= TrayClass()
 
 class Player:
@@ -607,17 +649,19 @@ class IA:
 		self.ori = False
 		self.inc = 0
 		self.hit = 0
+		self.rstflag = True
 	def reset(self, Reshot = False):
 		self.backwards = False
 		self.directional = False
 		self.newshot = True
 		self.inc = 0
 		self.hit = 0
-
+		self.rstflag = False
 		if Reshot :
-			TURN()
+			self.TURN()
 
 	def reload(self):
+		print("reload")
 		x = self.aim[0]
 		y = self.aim[1]
 		Ori = bool(random.getrandbits(1))
@@ -630,48 +674,72 @@ class IA:
 			else:x=x-1
 	def TURN(self):
 		if self.newshot:
-			#print ("newshot")
+			print ("newshot")
 			x = random.randint(0,9)
 			y = random.randint(0,9)
 
 			if self.ennemy.tray [x][y] != "":
-			#	print ("touché")
+				print ("touché")
 				self.aim = (x,y)
 				self.newshot = False
 
 		elif self.directional:
-		#	print ("Directional")
+
+
+			print ("Directional  " + str(self.inc ))
 			x = self.aim[0]
 			y = self.aim[1]
 			Xinc =  self.aimdir[0] - self.aim[0]
 			Yinc =  self.aimdir[1] - self.aim[1]
 
 #self.inc = self.inc+1
+
 			if  (x * Xinc+2*self.inc)> 9 or (x * Xinc+2*self.inc)<0 or (y * Yinc+2*self.inc)>9 or(y * Yinc+2*self.inc)<0:
+				if self.backwards :
+					self.reset(True)
 				self.backwards = True
 
+				print("directional ovf Fcheck")
 			if self.backwards:
-				if self.ennemy.ShowTray [x * -Xinc*self.inc][y * -Yinc*self.inc] != "":
-					self.reset(True)
-					pass
-				elif self.ennemy.tray [x * -Xinc*self.inc][y * -Yinc*self.inc] != "":
-					self.ennemy.ShowTray [x * -Xinc*self.inc][y * -Yinc*self.inc] = "Y"
-					self.hit = self.hit+1
-					self.inc = self.inc +1
-				else:
-					self.reset()
+				print("backwards")
+				if self.rstflag :
+					print("no rst flag")
+					if (x * -Xinc*self.inc)> 9 or (x * -Xinc*self.inc)<0 or (y * -Yinc*self.inc)>9 or(y * -Yinc*self.inc)<0:
+						print("directional ovf")
+						self.reset(True)
+					if self.ennemy.ShowTray [x * -Xinc*self.inc][y * -Yinc*self.inc] != "":
+						print("directional end")
+						self.reset()
 
-			else:
-				if self.ennemy.tray [x * Xinc+2*self.inc][y * Yinc+2*self.inc] != "":
-					self.ennemy.ShowTray [x * Xinc+2*self.inc][y * Yinc+2*self.inc] = "Y"
-					self.inc = self.inc + 1
-					self.hit = self.hit + 1
+					elif self.ennemy.tray [x * -Xinc*self.inc][y * -Yinc*self.inc] != "":
+						self.ennemy.ShowTray [x * -Xinc*self.inc][y * -Yinc*self.inc] = "Y"
+						print("touché")
+						self.hit = self.hit+1
+						self.inc = self.inc +1
+					else:
+						print("reset")
+						self.reset()
 				else:
-					self.backwards = True
-					self.inc = 0
+					print("rst flag detected")
+					self.rstflag = True
+			else:
+				print("forwards")
+				if self.rstflag :
+
+					if self.ennemy.tray [x * Xinc+2*self.inc][y * Yinc+2*self.inc] != "":
+						self.ennemy.ShowTray [x * Xinc+2*self.inc][y * Yinc+2*self.inc] = "Y"
+						self.inc = self.inc + 1
+						self.hit = self.hit + 1
+					else:
+						self.backwards = True
+						print("reset inc")
+						self.inc = 0
+				else :
+					print(self.rstflag)
+					self.rstflag = True
 
 		else :
-			#print ("cherck surroundings")
+			print ("cherck surroundings")
 			x = self.aim[0]
 			y = self.aim[1]
 			checked = False
@@ -687,16 +755,16 @@ class IA:
 				if x> 9 or x<0 or y>9 or y<0:
 					self.checked = self.checked+1
 					self.reload()
-
-				while self.ennemy.ShowTray [x][y] != "":
-					#print("already checked")
-					self.checked = self.checked+1
-					self.reload()
-					if self.checked >=3:
-						break
+				else:
+					while self.ennemy.ShowTray [x][y] != "":
+						print("already checked")
+						self.checked = self.checked+1
+						self.reload()
+						if self.checked >=3:
+							break
 
 				if self.ennemy.tray [x][y] != "":
-				#	print ("touché")
+					print ("touché")
 					self.ennemy.ShowTray [x][y] = "Y"
 					checked = True
 					self.newshot = False
@@ -745,7 +813,7 @@ def ArrayDisplay(Which):
 
 # enmplacements des panneaux (Side Pannel -> Span)(Top Pannel ->TNan)
 #____________________________________________________
-UI_SPan_h= 350
+UI_SPan_h= 220
 UI_SPan_w = 215
 
 UI_TPan_h= 80
@@ -755,9 +823,9 @@ Message = "Placez votre Flotte !"
 #____________________________________________________
 
 def basicInterface():
-	pygame.draw.rect(gameDisplay,Placeholder,(0,(ecran.current_h/2)-(UI_SPan_h/2),UI_SPan_w,UI_SPan_h)) #endroit, couleur, taille
-	pygame.draw.rect(gameDisplay,Placeholder,(ecran.current_w-UI_SPan_w,(ecran.current_h/2)-(UI_SPan_h/2),UI_SPan_w,UI_SPan_h))#endroit, couleur, taille
-	pygame.draw.rect(gameDisplay,Placeholder,(ecran.current_w/2 - UI_TPan_w/2,0,UI_TPan_w,UI_TPan_h)) #endroit, couleur, taille
+	pygame.draw.rect(gameDisplay,Placeholder,(0,(ScreenH/2)-(UI_SPan_h/2),UI_SPan_w,UI_SPan_h)) #endroit, couleur, taille
+	pygame.draw.rect(gameDisplay,Placeholder,(ScreenW-UI_SPan_w,(ScreenH/2)-(UI_SPan_h/2),UI_SPan_w,UI_SPan_h))#endroit, couleur, taille
+	pygame.draw.rect(gameDisplay,Placeholder,(ScreenW/2 - UI_TPan_w/2,0,UI_TPan_w,UI_TPan_h)) #endroit, couleur, taille
 
 
 
@@ -765,22 +833,23 @@ def PrintScore():
 
 	MsgBox = STATEfont.render(Message,1,[0,0,0])
 
-	gameDisplay.blit(TITLEfont.render("Ordi",1,[0,0,0]),(ecran.current_w-UI_SPan_w + 65,(ecran.current_h/2)-(UI_SPan_h/2) + 5))#
-	gameDisplay.blit(TITLEfont.render("Joueur",1,[0,0,0]),(50,(ecran.current_h/2)-(UI_SPan_h/2) + 5))
-	gameDisplay.blit(MsgBox,(ecran.current_w/2  - MsgBox.get_rect().size[0]/2,15))
+	gameDisplay.blit(TITLEfont.render("Ordi",1,[0,0,0]),(ScreenW-UI_SPan_w + 65,(ScreenH/2)-(UI_SPan_h/2) + 5))#
+	gameDisplay.blit(TITLEfont.render("Joueur",1,[0,0,0]),(50,(ScreenH/2)-(UI_SPan_h/2) + 5))
+	gameDisplay.blit(MsgBox,(ScreenW/2  - MsgBox.get_rect().size[0]/2,15))
 
 
-	gameDisplay.blit(FONT1.render("Caravelles : " + str(player.Cplaced ) + "/" + str( player.nbCar),1,[0,0,0]),(10,(ecran.current_h/2)-(UI_SPan_h/2) + 70))
-	gameDisplay.blit(FONT2.render("Fregates : " + str(player.Fplaced) + "/" + str( player.nbFreg),1,[0,0,0]),(10,(ecran.current_h/2)-(UI_SPan_h/2) + 120))
-	gameDisplay.blit(FONT3.render("Vaisseau : " + str(player.Vplaced) + "/" + str( player.nbVais),1,[0,0,0]),(10,(ecran.current_h/2)-(UI_SPan_h/2) + 170))
+	gameDisplay.blit(FONT1.render("Caravelles : " + str(player.Cplaced ) + "/" + str( player.nbCar),1,[0,0,0]),(10,(ScreenH/2)-(UI_SPan_h/2) + 70))
+	gameDisplay.blit(FONT2.render("Fregates : " + str(player.Fplaced) + "/" + str( player.nbFreg),1,[0,0,0]),(10,(ScreenH/2)-(UI_SPan_h/2) + 120))
+	gameDisplay.blit(FONT3.render("Vaisseau : " + str(player.Vplaced) + "/" + str( player.nbVais),1,[0,0,0]),(10,(ScreenH/2)-(UI_SPan_h/2) + 170))
 
-	gameDisplay.blit(STATfont.render("Caravelles : " + str(computer.Cplaced ) + "/" + str( computer.nbCar),1,[0,0,0]),(ecran.current_w-UI_SPan_w + 10,(ecran.current_h/2)-(UI_SPan_h/2) + 70))
-	gameDisplay.blit(STATfont.render("Fregates : " + str(computer.Fplaced) + "/" + str( computer.nbFreg),1,[0,0,0]),(ecran.current_w-UI_SPan_w + 10,(ecran.current_h/2)-(UI_SPan_h/2) + 120))
-	gameDisplay.blit(STATfont.render("Vaisseau : " + str(computer.Vplaced) + "/" + str( computer.nbVais),1,[0,0,0]),(ecran.current_w-UI_SPan_w + 10,(ecran.current_h/2)-(UI_SPan_h/2) + 170))
+	gameDisplay.blit(STATfont.render("Caravelles : " + str(computer.Cplaced ) + "/" + str( computer.nbCar),1,[0,0,0]),(ScreenW-UI_SPan_w + 10,(ScreenH/2)-(UI_SPan_h/2) + 70))
+	gameDisplay.blit(STATfont.render("Fregates : " + str(computer.Fplaced) + "/" + str( computer.nbFreg),1,[0,0,0]),(ScreenW-UI_SPan_w + 10,(ScreenH/2)-(UI_SPan_h/2) + 120))
+	gameDisplay.blit(STATfont.render("Vaisseau : " + str(computer.Vplaced) + "/" + str( computer.nbVais),1,[0,0,0]),(ScreenW-UI_SPan_w + 10,(ScreenH/2)-(UI_SPan_h/2) + 170))
+
 
 
 def TitleScreen():
-	gameDisplay.blit(pygame.transform.scale(LOGO,(485*2,176*2)),(ecran.current_w/2 - 485,30))
+	gameDisplay.blit(pygame.transform.scale(LOGO,(485*2,176*2)),(ScreenW/2 - 485,30))
 
 	Start = Bouton()
 	Start.imageset = "Assets/UI/BigButton"
@@ -817,11 +886,11 @@ def unloadts():
 	#print (buttons)
 
 def ShowBackGr():
-	nombre = ecran.current_w // fit + 1
+	nombre = ScreenW // fit + 1
 
 	img = pygame.image.load("Assets/Mer.png")
 	issou  = pygame.transform.scale(img, (nombre,nombre))
-	yrange = ecran.current_h // nombre + 1
+	yrange = ScreenH // nombre + 1
 
 	for x in range(0,fit):
 		for y in range(0,yrange):
@@ -879,7 +948,7 @@ def Showpl():
 	ydim = player.dim[1]
 
 	player.Gposx = 300
-	player.Gposy =ecran.current_h/2 - (ydim*offset)/2
+	player.Gposy =ScreenH/2 - (ydim*offset)/2
 	#player.FillTray() # remplissage du tableau player
 
 
@@ -887,8 +956,8 @@ def Showpl():
 	xdim = computer.dim[0]
 	ydim = computer.dim[1]
 
-	computer.Gposx = ecran.current_w - (xdim*offset) - 300
-	computer.Gposy =ecran.current_h/2  - (ydim*offset)/2
+	computer.Gposx = ScreenW - (xdim*offset) - 300
+	computer.Gposy =ScreenH/2  - (ydim*offset)/2
 	computer.FillTray()
 	#print (computer.tray)
 	ShowBackGr()
@@ -916,13 +985,17 @@ def showtray():
 	player.DisTray(gameDisplay,True)
 	computer.DisTray(gameDisplay,False)
 
-def RefreshPl():
+def RefreshPl(Redraw = False):
 	#print("refresh")
 
 	ShowBackGr()
 	basicInterface()
 	PrintScore()
-	player.showTray(gameDisplay)
+	if Redraw:
+		computer.vanish()
+		player.DisTray(gameDisplay,True)
+	else:
+		player.showTray(gameDisplay)
 	computer.showTray(gameDisplay)
 
 
@@ -962,6 +1035,7 @@ def ButtonScan(buttonArray,isup = True):
 			else:
 				if event.type == MOUSEBUTTONDOWN:
 					element.DoIntent()
+					print(player.ShowTray)
 		elif element.active :
 			element.unhover()
 
