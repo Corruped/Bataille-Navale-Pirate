@@ -363,32 +363,38 @@ class TrayClass:
 			delboat = 0
 			act = 0
 			for i in range(0,4):
-				if Boat[i][0] > 9:
+				if Boat[i][0] > 100:
 					delboat = delboat +1
+					if Boat[i][0] < 220:
+						act = act+1
 					#print ("delboat")
 
 				elif self.ShowTray[Boat[i][0]][Boat[i][1]] != "":
 					if self.ShowTray[Boat[i][0]][Boat[i][1]] != "NN" :
 						self.postray[nb][i] = (200,200)
-						act = act+1
 
-			if delboat == 3:
+
+			if delboat == 4:
+				print(delboat , Boat)
 				self.postray.remove(Boat)
-
+				#print("delboat")
 				if act == 2: self.Cplaced = self.Cplaced -1
 				elif act == 3 : self.Fplaced = self.Fplaced -1
 				elif act == 4 :self.Vplaced = self.Vplaced -1
+				else: print ("delboat = "+str(act))
 			nb = nb +1
-
-
 
 
 
 			#print(Boat[1][1])
 	def FillTray(self):
-		self.placeBoats(self.nbFreg,2)
-		self.placeBoats(self.nbCar,3)
+
+		self.placeBoats(self.nbCar,2)
+		self.Cplaced = self.nbCar
+		self.placeBoats(self.nbFreg,3)
+		self.Fplaced = self.nbFreg
 		self.placeBoats(self.nbVais,4)
+		self.Vplaced = self.nbVais
 		#print(self.tray)
 	def vanish(self):
 		for i in range (0,len(self.ennemy.ButTray)):
@@ -435,17 +441,17 @@ class TrayClass:
 					but.show()
 
 					if DEBUGTRAY :
-						traycontent = SmallDebugFont.render(tray [x][y], True, pygame.Color("white"))
+						traycontent = SmallDebugFont.render(self.tray [x][y], True, pygame.Color("white"))
 						debugplayer = SmallDebugFont.render(str(x) + " , " + str(y), True, pygame.Color("white"))
 						gameDisplay.blit(traycontent,(but.posX +5,but.posY +5))#
-						gameDisplay.blit(debugplayer,(but.posX +5,but.posY +25))#
+						gameDisplay.blit(debugplayer,(but.posX +5,but.posY +25))#		self. debugShow()
+
 
 	def showTray (self,surf):
 		n = int(((32 * 10) + 2 )* mult)
 		self.surf.blit(pygame.transform.scale(TRAY,(n,n)),(self.Gposx-2,self.Gposy-2))
 		for i in self.ButTray:
 			i.show()
-
 
 	def PlaceModeDisplay (self,what,Yinc ,Xinc ):
 		#print("draw")
@@ -661,7 +667,7 @@ class IA:
 			self.TURN()
 
 	def reload(self):
-		print("reload")
+		#print("reload")
 		x = self.aim[0]
 		y = self.aim[1]
 		Ori = bool(random.getrandbits(1))
@@ -674,19 +680,19 @@ class IA:
 			else:x=x-1
 	def TURN(self):
 		if self.newshot:
-			print ("newshot")
+			#print ("newshot")
 			x = random.randint(0,9)
 			y = random.randint(0,9)
 
 			if self.ennemy.tray [x][y] != "":
-				print ("touché")
+				#print ("touché")
 				self.aim = (x,y)
 				self.newshot = False
 
 		elif self.directional:
 
 
-			print ("Directional  " + str(self.inc ))
+			#print ("Directional  " + str(self.inc ))
 			x = self.aim[0]
 			y = self.aim[1]
 			Xinc =  self.aimdir[0] - self.aim[0]
@@ -699,31 +705,31 @@ class IA:
 					self.reset(True)
 				self.backwards = True
 
-				print("directional ovf Fcheck")
+				#print("directional ovf Fcheck")
 			if self.backwards:
-				print("backwards")
+				#print("backwards")
 				if self.rstflag :
-					print("no rst flag")
+					#print("no rst flag")
 					if (x * -Xinc*self.inc)> 9 or (x * -Xinc*self.inc)<0 or (y * -Yinc*self.inc)>9 or(y * -Yinc*self.inc)<0:
-						print("directional ovf")
+						#print("directional ovf")
 						self.reset(True)
 					if self.ennemy.ShowTray [x * -Xinc*self.inc][y * -Yinc*self.inc] != "":
-						print("directional end")
+						#print("directional end")
 						self.reset()
 
 					elif self.ennemy.tray [x * -Xinc*self.inc][y * -Yinc*self.inc] != "":
 						self.ennemy.ShowTray [x * -Xinc*self.inc][y * -Yinc*self.inc] = "Y"
-						print("touché")
+						#print("touché")
 						self.hit = self.hit+1
 						self.inc = self.inc +1
 					else:
-						print("reset")
+						#print("reset")
 						self.reset()
 				else:
-					print("rst flag detected")
+					#print("rst flag detected")
 					self.rstflag = True
 			else:
-				print("forwards")
+				#print("forwards")
 				if self.rstflag :
 
 					if self.ennemy.tray [x * Xinc+2*self.inc][y * Yinc+2*self.inc] != "":
@@ -732,14 +738,14 @@ class IA:
 						self.hit = self.hit + 1
 					else:
 						self.backwards = True
-						print("reset inc")
+						#print("reset inc")
 						self.inc = 0
 				else :
-					print(self.rstflag)
+					#print(self.rstflag)
 					self.rstflag = True
 
 		else :
-			print ("cherck surroundings")
+			#print ("cherck surroundings")
 			x = self.aim[0]
 			y = self.aim[1]
 			checked = False
@@ -757,14 +763,18 @@ class IA:
 					self.reload()
 				else:
 					while self.ennemy.ShowTray [x][y] != "":
-						print("already checked")
+						#print("already checked")
 						self.checked = self.checked+1
 						self.reload()
 						if self.checked >=3:
 							break
+							self.reset(True)
 
-				if self.ennemy.tray [x][y] != "":
-					print ("touché")
+				if self.checked >=3:
+					checked = True
+					self.newshot = True
+					self.checked = 0
+				elif self.ennemy.tray [x][y] != "":
 					self.ennemy.ShowTray [x][y] = "Y"
 					checked = True
 					self.newshot = False
@@ -772,11 +782,6 @@ class IA:
 					self.pola = Pola
 					self.directional = True
 					self.aimdir = (x,y)
-					self.checked = 0
-
-				elif self.checked >=3:
-					checked = True
-					self.newshot = True
 					self.checked = 0
 				else : self.checked = self.checked+1
 			checked = False
@@ -1035,7 +1040,7 @@ def ButtonScan(buttonArray,isup = True):
 			else:
 				if event.type == MOUSEBUTTONDOWN:
 					element.DoIntent()
-					print(player.ShowTray)
+
 		elif element.active :
 			element.unhover()
 
