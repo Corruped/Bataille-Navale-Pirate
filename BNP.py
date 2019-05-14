@@ -30,8 +30,8 @@ StopGame = False # variable verifiant l'etat du programe
 
 
 
-
-
+TOP  =  pygame.image.load("Assets/TOP.png")
+SIDE  =  pygame.image.load("Assets/SIDE.png")
 CROSS  =  pygame.image.load("Assets/cross.png")
 TRAY  =  pygame.image.load("Assets/tray.png")
 LOGO =  pygame.image.load("Assets/LOGO.png")

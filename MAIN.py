@@ -185,8 +185,12 @@ class IA:
 
 		global COUNTER
 		global TOUR
-		self.ennemy.ShowTray [x][y] = "Y"
-		#print(self.ennemy.ShowTray)
+		try:
+			self.ennemy.ShowTray [x][y] = "Y"
+		except:
+			self.reset(True)
+
+#print(self.ennemy.ShowTray)
 		TOUR = True
 		COUNTER = COUNTER +1
 		#print("TOUR no",COUNTER)
@@ -256,10 +260,12 @@ GLOBAL.Message = "Placez votre Flotte !"
 #____________________________________________________
 
 def basicInterface():
-	pygame.draw.rect(gameDisplay,Placeholder,(0,(ScreenH/2)-(UI_SPan_h/2),UI_SPan_w,UI_SPan_h)) #endroit, couleur, taille
-	pygame.draw.rect(gameDisplay,Placeholder,(ScreenW-UI_SPan_w,(ScreenH/2)-(UI_SPan_h/2),UI_SPan_w,UI_SPan_h))#endroit, couleur, taille
-	pygame.draw.rect(gameDisplay,Placeholder,(ScreenW/2 - UI_TPan_w/2,0,UI_TPan_w,UI_TPan_h)) #endroit, couleur, taille
-
+	#pygame.draw.rect(gameDisplay,Placeholder,(0,(ScreenH/2)-(UI_SPan_h/2),UI_SPan_w,UI_SPan_h)) #endroit, couleur, taille
+	gameDisplay.blit(SIDE,(0,(ScreenH/2)-(UI_SPan_h/2)))#
+	#pygame.draw.rect(gameDisplay,Placeholder,(ScreenW-UI_SPan_w,(ScreenH/2)-(UI_SPan_h/2),UI_SPan_w,UI_SPan_h))#endroit, couleur, taille
+	gameDisplay.blit(SIDE,(ScreenW-UI_SPan_w,(ScreenH/2)-(UI_SPan_h/2)))#
+	#pygame.draw.rect(gameDisplay,Placeholder,(ScreenW/2 - UI_TPan_w/2,0,UI_TPan_w,UI_TPan_h)) #endroit, couleur, taille
+	gameDisplay.blit(TOP,(ScreenW/2 - UI_TPan_w/2,0))#
 
 
 def PrintScore():
