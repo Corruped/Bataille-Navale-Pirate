@@ -41,10 +41,7 @@ pygame.init() #initialisation de l'objet pygame
 
 ecran = pygame.display.Info() # création d'un objet (pygame.display.Info)
 
-if ecran.current_w < 1900: mult = 1.5
-else: mult = 2
-Lcase = int(32*mult)
-offset = Lcase
+
 
 
 BaseFont = pygame.font.SysFont("Comic Sans MS",16) #definition d'un objet font (police d'écriture) -> BaseFont
@@ -176,6 +173,11 @@ class display:
 			self.ScreenH  = ecran.current_h
 
 display = display()
+
+if ecran.current_w < 1900: display.mult = 1.5
+else: display.mult = 2
+Lcase = int(32*display.mult)
+offset = Lcase
 
 class Bouton:
 	def __init__(self):

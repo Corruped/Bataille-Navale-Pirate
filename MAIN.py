@@ -294,8 +294,8 @@ def TitleScreen():
 
 	Start = Bouton()
 	Start.imageset = "Assets/UI/BigButton"
-	Start.Scale = 8
-	Start.posY = 500
+	Start.Scale =  int(4*display.mult)
+	Start.posY = int(250* display.mult)
 	Start.istext = True
 	Start.text = "Start"
 	Start.intent = 1
@@ -304,8 +304,8 @@ def TitleScreen():
 
 	Options = Bouton()
 	Options.imageset = "Assets/UI/BigButton"
-	Options.Scale = 8
-	Options.posY = 750
+	Options.Scale =  int(4*display.mult)
+	Options.posY = int(375* display.mult)
 	Options.istext = True
 	Options.text = "Options"
 	Options.intent = 10
@@ -352,7 +352,7 @@ def ShowOPT():
 	ShowBackGr ()
 	Debug = Bouton()
 	Debug.imageset = "Assets/UI/BigButton"
-	Debug.Scale = 8
+	Debug.Scale = int(4*display.mult)
 	Debug.posY = 200
 	Debug.istext = True
 	Debug.text = "Enable Debug"
@@ -362,7 +362,7 @@ def ShowOPT():
 
 	exit = Bouton()
 	exit.imageset = "Assets/UI/BigButton"
-	exit.Scale = 8
+	exit.Scale = int(4* display.mult)
 	exit.posY = 400
 	exit.istext = True
 	exit.text = "Done"
