@@ -215,8 +215,10 @@ def DoIntent(BOUTON):
 		RefreshPl(True)
 		IA.TURN()
 		Player.tray.CheckTray("PLayer : ")
+		RefreshPl(True)
 		if GLOBAL.DEBUGTRAY:
 			Player.showWhereIAaimed()
+
 	elif BOUTON.intent == 9:
 		unloadts()
 		Showts()

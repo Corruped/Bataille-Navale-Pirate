@@ -363,6 +363,12 @@ class TrayClass:
 				elif act == 3 : self.Fplaced = self.Fplaced -1
 				elif act == 4 :self.Vplaced = self.Vplaced -1
 				else: print ("delboat = "+str(act))
+
+				if self.Vplaced + self.Fplaced + self.Cplaced == 0:
+					if self.player:
+						GLOBAL.Message =  "Vous avez Perdu !"
+					elif  not self.player:
+						GLOBAL.Message =  "Vous avez Gagné !"
 			nb = nb +1
 
 
