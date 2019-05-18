@@ -262,8 +262,8 @@ class Bouton:
 		elif type == "y":
 			self.posY =  display.ScreenH  /2 -  self.image.get_rect().size[1] / 2
 		else :
-			print ("error centering button  : unknown argument : " + type)
-
+			#print ("error centering button  : unknown argument : " + type)
+			pass
 
 class proto:
 	def __init__(self):
@@ -364,7 +364,8 @@ class TrayClass:
 				if act == 2: self.Cplaced = self.Cplaced -1
 				elif act == 3 : self.Fplaced = self.Fplaced -1
 				elif act == 4 :self.Vplaced = self.Vplaced -1
-				else: print ("delboat = "+str(act))
+				else: #print ("delboat = "+str(act))
+					pass
 
 				if self.Vplaced + self.Fplaced + self.Cplaced == 0:
 					if self.player:
