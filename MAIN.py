@@ -12,10 +12,10 @@ from BNP import *
 
 pygame.display.set_caption('GAME')# définition du tytre de la fenetre -> plein écran (inutile) -> preview en bare des taches (ok)
 
-gameDisplay.fill([255,0,255]) # remplissage de la couleur d'arrière-plan (magenta) pour verifier l'abscence de texture
+display.Display.fill([255,0,255]) # remplissage de la couleur d'arrière-plan (magenta) pour verifier l'abscence de texture
 # --------> (si il y a un bout magenta , c'est pas beau et ça se voit)
 
-#pygame.draw.rect(gameDisplay,[20,30,12],(50,50,50,50)) #-> création d'un rectangle
+#pygame.draw.rect(display.Display,[20,30,12],(50,50,50,50)) #-> création d'un rectangle
 
 
 player = TrayClass() # creation d'un objet Tray
@@ -34,7 +34,7 @@ class Player:
 		for y in range(0,ydim):
 			for x in range(0,xdim):
 				traycontent = SmallDebugFont.render(self.tray.ShowTray [x][y], True, pygame.Color("Magenta"))
-				gameDisplay.blit(traycontent,(self.tray.Gposx + Lcase*x +25,self.tray.Gposy + Lcase*y +25))#
+				display.Display.blit(traycontent,(self.tray.Gposx + Lcase*x +25,self.tray.Gposy + Lcase*y +25))#
 
 
 class IA:
@@ -235,19 +235,19 @@ def DoIntent(BOUTON):
 
 def showFPS(): # afficher le taux de raffraichissement de l'écran
 	fps = BaseFont.render(str(int(clock.get_fps())), True, pygame.Color("white"))
-	pygame.draw.rect(gameDisplay,Placeholder,(90,90,90,90))
-	gameDisplay.blit(fps,(90,90))#
+	pygame.draw.rect(display.Display,Placeholder,(90,90,90,90))
+	display.Display.blit(fps,(90,90))#
 
 
 def ArrayDisplay(Which):
 	Max_X = len(Which) #taille X du tableau -> [¤,¤,¤,...,¤] -> ¤ est ["","","",...,""]
 	Max_Y = len(Which[0]) # taille Y du tableau  -> taille de ¤
 	dimss = BaseFont.render("width = " + str(Max_X) + " height = " + str(Max_Y),1,[0,0,0])# créer une image a partir des dimensions du tableau dans la police BaseFont
-	gameDisplay.blit(dimss,(500,180))# affichage des dimensions
+	display.Display.blit(dimss,(500,180))# affichage des dimensions
 	for x in range(0,Max_X):#pour tous les items (scan horizontal)
 		for y in range(0,Max_Y):#pour tous les items (scan vertical)
 			display = BaseFont.render(str(Which[x][y]),1,[0,0,0])# creer une image de la viariable dans la police BaseFont
-			gameDisplay.blit(display,(20*x+500,20*y+200))# dessin de la variable  sur gameDisplay
+			display.Display.blit(display,(20*x+500,20*y+200))# dessin de la variable  sur display.Display
 
 
 # enmplacements des panneaux (Side Pannel -> Span)(Top Pannel ->TNan)
@@ -262,35 +262,35 @@ GLOBAL.Message = "Placez votre Flotte !"
 #____________________________________________________
 
 def basicInterface():
-	#pygame.draw.rect(gameDisplay,Placeholder,(0,(ScreenH/2)-(UI_SPan_h/2),UI_SPan_w,UI_SPan_h)) #endroit, couleur, taille
-	gameDisplay.blit(SIDE,(0,(ScreenH/2)-(UI_SPan_h/2)))#
-	#pygame.draw.rect(gameDisplay,Placeholder,(ScreenW-UI_SPan_w,(ScreenH/2)-(UI_SPan_h/2),UI_SPan_w,UI_SPan_h))#endroit, couleur, taille
-	gameDisplay.blit(SIDE,(ScreenW-UI_SPan_w,(ScreenH/2)-(UI_SPan_h/2)))#
-	#pygame.draw.rect(gameDisplay,Placeholder,(ScreenW/2 - UI_TPan_w/2,0,UI_TPan_w,UI_TPan_h)) #endroit, couleur, taille
-	gameDisplay.blit(TOP,(ScreenW/2 - UI_TPan_w/2,0))#
+	#pygame.draw.rect(display.Display,Placeholder,(0,(display.ScreenH /2)-(UI_SPan_h/2),UI_SPan_w,UI_SPan_h)) #endroit, couleur, taille
+	display.Display.blit(SIDE,(0,(display.ScreenH /2)-(UI_SPan_h/2)))#
+	#pygame.draw.rect(display.Display,Placeholder,(display.display.ScreenW-UI_SPan_w,(display.ScreenH /2)-(UI_SPan_h/2),UI_SPan_w,UI_SPan_h))#endroit, couleur, taille
+	display.Display.blit(SIDE,(display.ScreenW-UI_SPan_w,(display.ScreenH /2)-(UI_SPan_h/2)))#
+	#pygame.draw.rect(display.Display,Placeholder,(display.ScreenW/2 - UI_TPan_w/2,0,UI_TPan_w,UI_TPan_h)) #endroit, couleur, taille
+	display.Display.blit(TOP,(display.ScreenW/2 - UI_TPan_w/2,0))#
 
 
 def PrintScore():
 
 	MsgBox = STATEfont.render(GLOBAL.Message,1,[0,0,0])
 
-	gameDisplay.blit(TITLEfont.render("Ordi",1,[0,0,0]),(ScreenW-UI_SPan_w + 65,(ScreenH/2)-(UI_SPan_h/2) + 5))#
-	gameDisplay.blit(TITLEfont.render("Joueur",1,[0,0,0]),(50,(ScreenH/2)-(UI_SPan_h/2) + 5))
-	gameDisplay.blit(MsgBox,(ScreenW/2  - MsgBox.get_rect().size[0]/2,15))
+	display.Display.blit(TITLEfont.render("Ordi",1,[0,0,0]),(display.ScreenW-UI_SPan_w + 65,(display.ScreenH /2)-(UI_SPan_h/2) + 5))#
+	display.Display.blit(TITLEfont.render("Joueur",1,[0,0,0]),(50,(display.ScreenH /2)-(UI_SPan_h/2) + 5))
+	display.Display.blit(MsgBox,(display.ScreenW/2  - MsgBox.get_rect().size[0]/2,15))
 
 
-	gameDisplay.blit(GLOBAL.FONT1.render("Caravelles : " + str(player.Cplaced ) + "/" + str( player.nbCar),1,[0,0,0]),(10,(ScreenH/2)-(UI_SPan_h/2) + 70))
-	gameDisplay.blit(GLOBAL.FONT2.render("Fregates : " + str(player.Fplaced) + "/" + str( player.nbFreg),1,[0,0,0]),(10,(ScreenH/2)-(UI_SPan_h/2) + 120))
-	gameDisplay.blit(GLOBAL.FONT3.render("Vaisseau : " + str(player.Vplaced) + "/" + str( player.nbVais),1,[0,0,0]),(10,(ScreenH/2)-(UI_SPan_h/2) + 170))
+	display.Display.blit(GLOBAL.FONT1.render("Caravelles : " + str(player.Cplaced ) + "/" + str( player.nbCar),1,[0,0,0]),(10,(display.ScreenH /2)-(UI_SPan_h/2) + 70))
+	display.Display.blit(GLOBAL.FONT2.render("Fregates : " + str(player.Fplaced) + "/" + str( player.nbFreg),1,[0,0,0]),(10,(display.ScreenH /2)-(UI_SPan_h/2) + 120))
+	display.Display.blit(GLOBAL.FONT3.render("Vaisseau : " + str(player.Vplaced) + "/" + str( player.nbVais),1,[0,0,0]),(10,(display.ScreenH /2)-(UI_SPan_h/2) + 170))
 
-	gameDisplay.blit(STATfont.render("Caravelles : " + str(computer.Cplaced ) + "/" + str( computer.nbCar),1,[0,0,0]),(ScreenW-UI_SPan_w + 10,(ScreenH/2)-(UI_SPan_h/2) + 70))
-	gameDisplay.blit(STATfont.render("Fregates : " + str(computer.Fplaced) + "/" + str( computer.nbFreg),1,[0,0,0]),(ScreenW-UI_SPan_w + 10,(ScreenH/2)-(UI_SPan_h/2) + 120))
-	gameDisplay.blit(STATfont.render("Vaisseau : " + str(computer.Vplaced) + "/" + str( computer.nbVais),1,[0,0,0]),(ScreenW-UI_SPan_w + 10,(ScreenH/2)-(UI_SPan_h/2) + 170))
+	display.Display.blit(STATfont.render("Caravelles : " + str(computer.Cplaced ) + "/" + str( computer.nbCar),1,[0,0,0]),(display.ScreenW-UI_SPan_w + 10,(display.ScreenH /2)-(UI_SPan_h/2) + 70))
+	display.Display.blit(STATfont.render("Fregates : " + str(computer.Fplaced) + "/" + str( computer.nbFreg),1,[0,0,0]),(display.ScreenW-UI_SPan_w + 10,(display.ScreenH /2)-(UI_SPan_h/2) + 120))
+	display.Display.blit(STATfont.render("Vaisseau : " + str(computer.Vplaced) + "/" + str( computer.nbVais),1,[0,0,0]),(display.ScreenW-UI_SPan_w + 10,(display.ScreenH /2)-(UI_SPan_h/2) + 170))
 
 
 
 def TitleScreen():
-	gameDisplay.blit(pygame.transform.scale(LOGO,(485*2,176*2)),(ScreenW/2 - 485,30))
+	display.Display.blit(pygame.transform.scale(LOGO,(485*2,176*2)),(display.ScreenW/2 - 485,30))
 
 	Start = Bouton()
 	Start.imageset = "Assets/UI/BigButton"
@@ -311,6 +311,7 @@ def TitleScreen():
 	Options.intent = 10
 	Options.initimages()
 	Options.center("x")
+
 	global buttons
 	buttons.append (Options)
 	Options.show()
@@ -327,15 +328,15 @@ def unloadts():
 	#print (buttons)
 
 def ShowBackGr():
-	nombre = ScreenW // fit + 1
+	nombre = display.ScreenW // fit + 1
 
 	img = pygame.image.load("Assets/Mer.png")
 	issou  = pygame.transform.scale(img, (nombre,nombre))
-	yrange = ScreenH // nombre + 1
+	yrange = display.ScreenH  // nombre + 1
 
 	for x in range(0,fit):
 		for y in range(0,yrange):
-			gameDisplay.blit(issou,(x * nombre,y*nombre))
+			display.Display.blit(issou,(x * nombre,y*nombre))
 
 
 
@@ -389,7 +390,7 @@ def Showpl():
 	ydim = player.dim[1]
 
 	player.Gposx = 300
-	player.Gposy =ScreenH/2 - (ydim*Lcase)/2
+	player.Gposy =display.ScreenH /2 - (ydim*Lcase)/2
 	#player.FillTray() # remplissage du tableau player
 
 
@@ -397,16 +398,16 @@ def Showpl():
 	xdim = computer.dim[0]
 	ydim = computer.dim[1]
 
-	computer.Gposx = ScreenW - (xdim*Lcase) - 300
-	computer.Gposy =ScreenH/2  - (ydim*Lcase)/2
+	computer.Gposx = display.ScreenW - (xdim*Lcase) - 300
+	computer.Gposy =display.ScreenH /2  - (ydim*Lcase)/2
 	computer.FillTray()
 	#print (computer.tray)
 	ShowBackGr()
-	player.DisTray(gameDisplay,True)
+	player.DisTray(display.Display,True)
 	player.ennemy = computer
 
 	computer.ennemy = player
-	computer.DisTray(gameDisplay,False)
+	computer.DisTray(display.Display,False)
 
 	basicInterface()
 	PrintScore()
@@ -418,13 +419,13 @@ def reveal(x,y):
 	else:
 		computer.ShowTray[x][y] = ""
 	player.vanish()
-	computer.DisTray(gameDisplay,False)
+	computer.DisTray(display.Display,False)
 
 def showtray():
 	player.vanish()
 	computer.vanish()
-	player.DisTray(gameDisplay,True)
-	computer.DisTray(gameDisplay,False)
+	player.DisTray(display.Display,True)
+	computer.DisTray(display.Display,False)
 
 def RefreshPl(Redraw = False):
 	#print("refresh")
@@ -434,20 +435,20 @@ def RefreshPl(Redraw = False):
 	PrintScore()
 	if Redraw:
 		computer.vanish()
-		player.DisTray(gameDisplay,True)
+		player.DisTray(display.Display,True)
 	else:
-		player.showTray(gameDisplay)
-	computer.showTray(gameDisplay)
+		player.showTray(display.Display)
+	computer.showTray(display.Display)
 
 
 def editor(key):
 	if GLOBAL.S :
 		RefreshPl()
-		player.surf = gameDisplay
+		player.surf = display.Display
 		player.UpdateTray(key)
-		#player.deltray(gameDisplay)
+		#player.deltray(display.Display)
 		computer.vanish()
-		player.DisTray(gameDisplay,True,False)
+		player.DisTray(display.Display,True,False)
 
 
 RefreshPl()

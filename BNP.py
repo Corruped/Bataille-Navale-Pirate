@@ -157,25 +157,25 @@ def ScribeBoat(id,size,posX,posY,Xinc,Yinc,tray,postray,angletray,TotalBoats):
 	#print ("added  " +  str(postray[TotalBoats]))
 
 	return TotalBoats + 1
-if ecran.current_w > 1920 :
-	gameDisplay = pygame.display.set_mode((1920,1080))# definition de la taille de la fenetre ( -> taille de l'écran)
-	ScreenW  = 1920
-	ScreenH = 1080
 
-else:
-	gameDisplay = pygame.display.set_mode((ecran.current_w,ecran.current_h),FULLSCREEN)
-	ScreenW  = ecran.current_w
-	ScreenH = ecran.current_h
 
 
 
 class display:
 	def __init__(self):
-		self.Display = pygame.display.set_mode()
+
 		self.mult = 2
+		if ecran.current_w > 1920 :
+			self.Display = pygame.display.set_mode((1920,1080),FULLSCREEN)# definition de la taille de la fenetre ( -> taille de l'écran)
+			self.ScreenW   = 1920
+			self.ScreenH  = 1080
+
+		else:
+			self.Display = pygame.display.set_mode((ecran.current_w,ecran.current_h),FULLSCREEN)
+			self.ScreenW   = ecran.current_w
+			self.ScreenH  = ecran.current_h
 
 display = display()
-
 
 class Bouton:
 	def __init__(self):
@@ -230,35 +230,35 @@ class Bouton:
 		########################
 
 		if self.imageset == "/":
-			self.burface = pygame.draw.rect(gameDisplay,self.color,(self.posX,self.posY,self.w,self.h))
+			self.burface = pygame.draw.rect(display.Display,self.color,(self.posX,self.posY,self.w,self.h))
 		else :
 			self.initimages()
-			self.burface = gameDisplay.blit(self.image,(self.posX,self.posY))
+			self.burface = display.Display.blit(self.image,(self.posX,self.posY))
 			if self.istext :
-				self.burface = gameDisplay.blit(self.textimage,(self.posX,self.posY))
+				self.burface = display.Display.blit(self.textimage,(self.posX,self.posY))
 
 	def hover(self):
 		if self.imageset == "/":
-			self.burface = pygame.draw.rect(gameDisplay,self.ucolor,(self.posX,self.posY,self.w,self.h))
+			self.burface = pygame.draw.rect(display.Display,self.ucolor,(self.posX,self.posY,self.w,self.h))
 		else :
-			self.burface = gameDisplay.blit(self.hoverimage,(self.posX,self.posY))
+			self.burface = display.Display.blit(self.hoverimage,(self.posX,self.posY))
 			if self.istext :
-				self.burface = gameDisplay.blit(self.textimage,(self.posX,self.posY))
+				self.burface = display.Display.blit(self.textimage,(self.posX,self.posY))
 
 	def unhover(self):
 		if self.imageset == "/":
-			self.burface = pygame.draw.rect(gameDisplay,self.color,(self.posX,self.posY,self.w,self.h))
+			self.burface = pygame.draw.rect(display.Display,self.color,(self.posX,self.posY,self.w,self.h))
 
 		else :
-			self.burface = gameDisplay.blit(self.image,(self.posX,self.posY))
+			self.burface = display.Display.blit(self.image,(self.posX,self.posY))
 			if self.istext :
-				self.burface = gameDisplay.blit(self.textimage,(self.posX,self.posY))
+				self.burface = display.Display.blit(self.textimage,(self.posX,self.posY))
 
 	def center(self,type):
 		if type == "x":
-			self.posX =   ScreenW /2 - self.image.get_rect().size[0] / 2
+			self.posX =   display.ScreenW  /2 - self.image.get_rect().size[0] / 2
 		elif type == "y":
-			self.posY =  ScreenH /2 -  self.image.get_rect().size[1] / 2
+			self.posY =  display.ScreenH  /2 -  self.image.get_rect().size[1] / 2
 		else :
 			print ("error centering button  : unknown argument : " + type)
 
@@ -291,7 +291,7 @@ class TrayClass:
 		self.placeposX =0
 		self.placeposY =0
 		self.placeMode = False
-		self.surf = gameDisplay
+		self.surf = display.Display
 		self.Xinc = 0
 		self.Yinc = 0
 		self.length = 0
@@ -413,7 +413,8 @@ class TrayClass:
 					but.ID = (x,y)
 					but.autoScale = False
 					but.Scale = display.mult
-					but.intent = 5
+					if tray [x][y] == "NN":
+						but.intent = 5
 					but.arg = self.ennemy
 					but.imageset = "Assets/Boats/"
 					if Visible:
@@ -430,8 +431,8 @@ class TrayClass:
 					if GLOBAL.DEBUGTRAY :
 						traycontent = SmallDebugFont.render(self.tray [x][y], True, pygame.Color("white"))
 						debugplayer = SmallDebugFont.render(str(x) + " , " + str(y), True, pygame.Color("white"))
-						gameDisplay.blit(traycontent,(but.posX +5,but.posY +5))#
-						gameDisplay.blit(debugplayer,(but.posX +5,but.posY +25))#		self. debugShow()
+						display.Display.blit(traycontent,(but.posX +5,but.posY +5))#
+						display.Display.blit(debugplayer,(but.posX +5,but.posY +25))#		self. debugShow()
 
 
 	def showTray (self,surf):
