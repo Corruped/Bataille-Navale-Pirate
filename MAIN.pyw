@@ -230,7 +230,8 @@ def DoIntent(BOUTON):
 		unloadts()
 		Showts()
 	else :
-		print ("error doing intent  : unknown intent :  id = " + str(BOUTON.intent))
+		#print ("error doing intent  : unknown intent :  id = " + str(BOUTON.intent))
+		pass
 
 
 def showFPS(): # afficher le taux de raffraichissement de l'écran
