@@ -484,13 +484,12 @@ def ButtonScan(buttonArray,isup = True):
 
 while not StopGame:
 	for event in pygame.event.get(): #Gestionaire d'evènements (souris clavier boutons ... )
-		if event.type == pygame.QUIT: #Si la croix rouge (en haut a droite est cliquée) -> plein écran (inutile) -> preview en bare des taches (ok)
+		if event.type == pygame.QUIT: #Si la croix rouge (en haut a droite est cliquée)
 			quit() #quitter le prgm
 
 		if event.type == pygame.KEYDOWN: #Si une touche est enfoncée
 			if event.key == pygame.K_ESCAPE: #si la touche échap est enfoncée
 				quit() #quitter le prgm
-
 
 		if GLOBAL.S :
 			if event.type == pygame.KEYDOWN:

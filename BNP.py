@@ -284,7 +284,7 @@ class TrayClass:
 		self.editTray = [[""]*10 for _ in range(10)]
 		self.angle = [[0]*10 for _ in range(10)]
 		self.ShowTray = [[""]*10 for _ in range(10)]
-		self.checked = [[False]*10 for _ in range(10)]
+		self.checked = [[False]*10 for  _ in range(10)]
 		self.postray = []
 		self.Gposx = 30
 		self.Gposy = 30
@@ -364,8 +364,8 @@ class TrayClass:
 				if act == 2: self.Cplaced = self.Cplaced -1
 				elif act == 3 : self.Fplaced = self.Fplaced -1
 				elif act == 4 :self.Vplaced = self.Vplaced -1
-				else: #print ("delboat = "+str(act))
-					pass
+				#else: #print ("delboat = "+str(act))
+
 
 				if self.Vplaced + self.Fplaced + self.Cplaced == 0:
 					if self.player:
